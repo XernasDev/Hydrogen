@@ -7,10 +7,22 @@
     <groupId>dev.xernas</groupId>
     <artifactId>Hydrogen</artifactId>
     <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>Hydrogen</name>
+    <description>A modern Java application engine built on Photon</description>
+    <developers>
+        <developer>
+            <name>XernasDev</name>
+            <url>https://github.com/XernasDev</url>
+        </developer>
+    </developers>
+    <url>https://github.com/XernasDev/Photon</url>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -29,12 +41,32 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
-            <groupId>dev.xernas</groupId>
+            <groupId>com.github.XernasDev</groupId>
             <artifactId>Photon</artifactId>
             <version>1.0.0</version>
         </dependency>
