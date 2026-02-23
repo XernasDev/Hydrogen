@@ -1,5 +1,6 @@
-package dev.xernas.hydrogen;
+package dev.xernas.hydrogen.rendering;
 
+import dev.xernas.hydrogen.rendering.material.Material;
 import dev.xernas.photon.api.IRenderer;
 import dev.xernas.photon.api.framebuffer.IFramebuffer;
 import dev.xernas.photon.api.model.IMesh;
@@ -7,7 +8,6 @@ import dev.xernas.photon.api.model.Model;
 import dev.xernas.photon.api.shader.IShader;
 import dev.xernas.photon.api.shader.Shader;
 import dev.xernas.photon.api.texture.ITexture;
-import dev.xernas.photon.api.texture.Texture;
 import dev.xernas.photon.exceptions.PhotonException;
 
 public class RenderingData {

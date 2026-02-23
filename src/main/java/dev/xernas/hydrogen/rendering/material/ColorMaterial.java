@@ -1,4 +1,4 @@
-package dev.xernas.hydrogen;
+package dev.xernas.hydrogen.rendering.material;
 
 import dev.xernas.photon.api.texture.Texture;
 

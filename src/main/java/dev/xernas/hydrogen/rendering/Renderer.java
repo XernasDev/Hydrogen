@@ -1,8 +1,7 @@
-package dev.xernas.hydrogen;
+package dev.xernas.hydrogen.rendering;
 
+import dev.xernas.hydrogen.ecs.Scene;
 import dev.xernas.photon.exceptions.PhotonException;
-
-import java.awt.*;
 
 public interface Renderer {
 

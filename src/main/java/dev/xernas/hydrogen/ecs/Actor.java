@@ -1,6 +1,9 @@
-package dev.xernas.hydrogen;
+package dev.xernas.hydrogen.ecs;
 
+import dev.xernas.hydrogen.ecs.module.Module;
 import dev.xernas.photon.api.Transform;
+import dev.xernas.photon.api.window.Window;
+import dev.xernas.photon.api.window.input.Input;
 
 import java.util.*;
 
@@ -37,6 +40,22 @@ public class Actor {
 
     public Transform getTransform() {
         return transform;
+    }
+
+    public void start(Window window) {
+        modules.values().forEach(module -> module.onStart(this, window));
+    }
+
+    public void update() {
+        modules.values().forEach(Module::onUpdate);
+    }
+
+    public void input(Input input) {
+        modules.values().forEach(module -> module.onInput(input));
+    }
+
+    public void stop() {
+        modules.values().forEach(Module::onStop);
     }
 
     public Collection<Module> getModules() {

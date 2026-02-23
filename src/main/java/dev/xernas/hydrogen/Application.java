@@ -1,5 +1,10 @@
 package dev.xernas.hydrogen;
 
+import dev.xernas.hydrogen.asset.AssetManager;
+import dev.xernas.hydrogen.ecs.SceneManager;
+import dev.xernas.hydrogen.rendering.DefaultRenderer;
+import dev.xernas.hydrogen.rendering.Frame;
+import dev.xernas.hydrogen.rendering.Renderer;
 import dev.xernas.photon.Library;
 import dev.xernas.photon.PhotonAPI;
 import dev.xernas.photon.api.IRenderer;
@@ -10,11 +15,11 @@ import dev.xernas.photon.api.texture.ITexture;
 import dev.xernas.photon.api.window.Window;
 import dev.xernas.photon.exceptions.PhotonException;
 
-import java.awt.*;
-
 import static dev.xernas.hydrogen.AppConstants.FRAMETIME;
 
 public abstract class Application {
+
+    private static final AssetManager hydroAssetManager = new AssetManager(Application.class.getClassLoader(), "shaders");
 
     private static boolean running = false;
     private static float deltaTime;
@@ -27,8 +32,10 @@ public abstract class Application {
     public abstract boolean isDebug();
 
     public abstract Window getWindow();
-    public Renderer getRenderer(IRenderer<IFramebuffer, IShader, IMesh, ITexture> renderer) {
-        return new DefaultRenderer(renderer);
+    public abstract AssetManager getAssetManager();
+
+    public Renderer getRenderer(IRenderer<IFramebuffer, IShader, IMesh, ITexture> renderer, Window window) {
+        return new DefaultRenderer(renderer, window);
     }
 
     public abstract void onStartup();
@@ -50,12 +57,17 @@ public abstract class Application {
         // Renderer stuff
         photonRenderer = PhotonAPI.getRenderer(window, false);
         photonRenderer.start();
-        Renderer renderer = getRenderer(photonRenderer);
+        Renderer renderer = getRenderer(photonRenderer, window);
+
+        // Asset manager
+        hydroAssetManager.loadShaders();
+        AssetManager remoteAssetManager = getAssetManager();
+        remoteAssetManager.loadShaders();
 
         // Scene manager
         onStartup();
         try {
-            SceneManager.startup(renderer);
+            SceneManager.startup(window, renderer);
         } catch (PhotonException e) {
             throw new HydrogenException("Failed to start SceneManager", e);
         }
@@ -83,6 +95,7 @@ public abstract class Application {
 
             // Update window
             window.update(photonRenderer);
+            SceneManager.input();
 
             // Update objects
             while (unprocessedTime > FRAMETIME) {
@@ -122,6 +135,10 @@ public abstract class Application {
         photonRenderer.start();
     }
 
+    public static void stop() {
+        running = false;
+    }
+
     public static boolean isRunning() {
         return running;
     }
@@ -134,4 +151,7 @@ public abstract class Application {
         return fps;
     }
 
+    public static AssetManager getHydrogenAssetManager() {
+        return hydroAssetManager;
+    }
 }
