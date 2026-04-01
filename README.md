@@ -4,7 +4,7 @@ It is using my own graphics library which wraps around opengl named [Photon](htt
 It is a really important project to me because it really encapsulates the kind of programming that I want to do
 
 ## Status
-This project is a work in progress (V2 releasing soon.. -> [check progress](https://github.com/XernasDev/Hydrogen/tree/v2))
+This project is a work in progress (V2 releasing soon..)
 
 ## Features
 - A lot of things, discover it by yourself !
@@ -18,22 +18,7 @@ This project is a work in progress (V2 releasing soon.. -> [check progress](http
 ## Getting Started​
 
 ### Installation
-You can simply use Jitpack ! Add the following to your `pom.xml`:
-```xml
-<repositories>
-    <repository>
-        <id>jitpack.io</id>
-        <url>https://jitpack.io</url>
-    </repository>
-</repositories>
-```
-```xml
-<dependency>
-    <groupId>com.github.XernasDev</groupId>
-    <artifactId>Hydrogen</artifactId>
-    <version>1.0.0</version>
-</dependency>
-```
+There is currently no releases for Hydrogen V2 but i'm working on it (you can still use V1 though)
 
 ## License
 This project is licensed under the GNU Affero General Public License v3.0.​
