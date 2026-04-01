@@ -4,7 +4,7 @@ It is using my own graphics library which wraps around opengl named [Photon](htt
 It is a really important project to me because it really encapsulates the kind of programming that I want to do
 
 ## Status
-This project is a work in progress (V2 releasing soon.. -> [check progress])
+This project is a work in progress (V2 releasing soon.. -> [check progress](https://github.com/XernasDev/Hydrogen/tree/v2))
 
 ## Features
 - A lot of things, discover it by yourself !
