@@ -66,17 +66,17 @@
 
     <dependencies>
         <dependency>
-            <groupId>dev.xernas</groupId>
+            <groupId>com.github.XernasDev</groupId>
             <artifactId>Photon</artifactId>
             <version>2.0.2</version>
         </dependency>
         <dependency>
-            <groupId>dev.xernas</groupId>
+            <groupId>com.github.XernasDev</groupId>
             <artifactId>Microscope</artifactId>
             <version>1.0.1</version>
         </dependency>
         <dependency>
-            <groupId>dev.xernas</groupId>
+            <groupId>com.github.XernasDev</groupId>
             <artifactId>Atom</artifactId>
             <version>1.0.1</version>
         </dependency>
