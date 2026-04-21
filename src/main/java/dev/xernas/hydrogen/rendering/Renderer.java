@@ -1,11 +1,10 @@
 package dev.xernas.hydrogen.rendering;
 
-import dev.xernas.hydrogen.HydrogenException;
 import dev.xernas.hydrogen.ecs.Actor;
 import dev.xernas.hydrogen.ecs.Scene;
-import dev.xernas.photon.api.model.Model;
-import dev.xernas.photon.api.texture.ITexture;
 import dev.xernas.photon.exceptions.PhotonException;
+
+import java.awt.*;
 
 public interface Renderer {
 
@@ -18,6 +17,8 @@ public interface Renderer {
     void unloadScene() throws PhotonException;
 
     void unloadActor(Actor actor) throws PhotonException;
+
+    void setClearColor(Color color);
 
     default void reloadActor(Actor actor) throws PhotonException {
         unloadActor(actor);

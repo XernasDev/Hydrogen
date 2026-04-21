@@ -5,6 +5,7 @@ import dev.xernas.hydrogen.asset.Asset;
 import dev.xernas.hydrogen.asset.AssetManager;
 import dev.xernas.hydrogen.ecs.Actor;
 import dev.xernas.hydrogen.ecs.module.GlobalModule;
+import dev.xernas.hydrogen.ecs.module.LightSource;
 import dev.xernas.hydrogen.ecs.module.RenderingModule;
 import dev.xernas.hydrogen.ecs.Scene;
 import dev.xernas.hydrogen.rendering.material.Material;
@@ -23,7 +24,9 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class DefaultRenderer implements Renderer {
 
@@ -32,6 +35,7 @@ public class DefaultRenderer implements Renderer {
     private final Map<Actor, RenderingData> loadedData;
 
     private Scene currentScene;
+    private Color clearColor = AppConstants.APP_COLOR;
 
     public DefaultRenderer(IRenderer<IFramebuffer, IShader, IMesh, ITexture> renderer, Window window) {
         this.renderer = renderer;
@@ -42,7 +46,7 @@ public class DefaultRenderer implements Renderer {
     @Override
     public void render(Scene scene) throws PhotonException {
         if (isNotSceneLoaded(scene)) throw new HydrogenException("Scene " + scene.getName() + " not loaded");
-        renderer.clear(AppConstants.APP_COLOR);
+        renderer.clear(clearColor);
         for (Map.Entry<Actor, RenderingData> entry : loadedData.entrySet()) {
             Actor actor = entry.getKey();
             RenderingData data = entry.getValue();
@@ -66,14 +70,11 @@ public class DefaultRenderer implements Renderer {
                 shader.setUniform("u_normalMatrix", new Matrix3f(modelMatrix).invert().transpose());
                 shader.setUniform("u_cameraWorldPos", scene.getCameraActor().getTransform().getPosition());
 
+                for (GlobalModule globalModule : scene.getGlobalModules()) globalModule.onGlobalRender(shader, actor, renderer);
+
                 // Actor rendering
                 actor.render(data, renderer);
             });
-
-            for (Actor globalModuleActor : scene.getActorsWithModule(GlobalModule.class)) {
-                GlobalModule globalModule = globalModuleActor.getModule(GlobalModule.class);
-                globalModule.onGlobalRender(shader, renderer);
-            }
         }
     }
 
@@ -132,6 +133,11 @@ public class DefaultRenderer implements Renderer {
         if (!data.isLoaded()) return;
         data.unload(renderer);
         loadedData.remove(actor);
+    }
+
+    @Override
+    public void setClearColor(Color color) {
+        clearColor = color;
     }
 
     public boolean isNotSceneLoaded(Scene scene) {

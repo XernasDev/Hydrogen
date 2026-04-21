@@ -1,6 +1,7 @@
 package dev.xernas.hydrogen.ecs;
 
 import dev.xernas.hydrogen.HydrogenException;
+import dev.xernas.hydrogen.ecs.module.GlobalModule;
 import dev.xernas.hydrogen.ecs.module.Module;
 import dev.xernas.hydrogen.rendering.Renderer;
 import dev.xernas.photon.api.Transform;
@@ -16,8 +17,12 @@ public class Scene {
     private final List<Actor> actors = new ArrayList<>();
     private final Map<String, Actor> actorNames = new HashMap<>();
 
+    private final List<GlobalModule> globalModules = new ArrayList<>();
+
     private Window window;
     private Renderer renderer;
+
+    private Actor cameraActor;
 
     private boolean is3D;
 
@@ -31,6 +36,7 @@ public class Scene {
 
     public void load(Window window, Renderer renderer) throws PhotonException {
         if (!hasCameraActor()) throw new HydrogenException("Scene " + name + " must have at least one camera actor to be loaded.");
+        cameraActor = findCameraActor();
         renderer.loadScene(this);
         actors.forEach(actor -> actor.start(window, renderer));
 
@@ -54,6 +60,7 @@ public class Scene {
     public Scene newActor(Actor actor) {
         actors.add(actor);
         actorNames.put(actor.getName(), actor);
+        if (actor.hasModule(GlobalModule.class)) globalModules.add(actor.getModule(GlobalModule.class));
         return this;
     }
 
@@ -70,6 +77,7 @@ public class Scene {
 
     public void destroyActor(Actor actor) {
         if (isNotRendererLoaded()) return;
+        if (actor.hasModule(GlobalModule.class)) globalModules.remove(actor.getModule(GlobalModule.class));
         actor.stop();
         try {
             renderer.unloadActor(actor);
@@ -96,17 +104,26 @@ public class Scene {
         return actors;
     }
 
+    // Do NOT execute this every frame !
     public List<Actor> getActorsWithModule(Class<? extends Module> moduleClass) {
         return actors.stream()
                      .filter(actor -> actor.hasModule(moduleClass))
                      .toList();
     }
 
-    public Actor getCameraActor() {
+    public List<GlobalModule> getGlobalModules() {
+        return globalModules;
+    }
+
+    public Actor findCameraActor() {
         Optional<Actor> cameraActor = actors.stream()
                 .filter(actor -> actor.getTransform() instanceof Transform.CameraTransform)
                 .findAny();
         return cameraActor.orElse(null);
+    }
+
+    public Actor getCameraActor() {
+        return cameraActor;
     }
 
     public boolean hasCameraActor() {

@@ -20,7 +20,7 @@ import static dev.xernas.hydrogen.AppConstants.FRAMETIME;
 
 public abstract class Application {
 
-    private static final AssetManager hydroAssetManager = new AssetManager(Application.class.getClassLoader(), "shaders");
+    private static final AssetManager hydroAssetManager = new AssetManager(Application.class.getClassLoader(), "shaders", "textures");
     private static final TaskManager taskManager = new TaskManager();
 
     private static boolean running = false;
@@ -54,8 +54,10 @@ public abstract class Application {
 
         // Asset manager
         hydroAssetManager.loadShaders();
+        hydroAssetManager.loadTextures();
         AssetManager remoteAssetManager = getAssetManager();
         remoteAssetManager.loadShaders();
+        remoteAssetManager.loadTextures();
 
         // Renderer stuff
         photonRenderer = PhotonAPI.getRenderer(window, false);

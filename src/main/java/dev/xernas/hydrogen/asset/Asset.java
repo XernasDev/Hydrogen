@@ -1,6 +1,7 @@
 package dev.xernas.hydrogen.asset;
 
 import dev.xernas.photon.api.shader.Shader;
+import dev.xernas.photon.api.texture.Texture;
 
 public class Asset {
 
@@ -37,6 +38,20 @@ public class Asset {
 
         public Shader getShader() {
             return shader;
+        }
+    }
+
+    public static class TextureAsset extends Asset {
+
+        private final Texture texture;
+
+        public TextureAsset(String path, String name, AssetManager owner, Texture texture) {
+            super(path, name, owner);
+            this.texture = texture;
+        }
+
+        public Texture getTexture() {
+            return texture;
         }
     }
 

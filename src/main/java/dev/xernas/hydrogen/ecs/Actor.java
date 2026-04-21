@@ -41,6 +41,12 @@ public class Actor {
         }
     }
 
+    public void newModules(Module... modules) {
+        for (Module module : modules) {
+            this.modules.put(module.getClass(), module);
+        }
+    }
+
     public String getName() {
         return name;
     }
