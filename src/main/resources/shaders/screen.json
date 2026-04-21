@@ -1,0 +1,11 @@
+{
+  "name": "screen",
+  "vertex": {
+    "fromHydrogen": true,
+    "path": "vertex/basic.glsl"
+  },
+  "fragment": {
+    "fromHydrogen": true,
+    "path": "fragment/screen.glsl"
+  }
+}

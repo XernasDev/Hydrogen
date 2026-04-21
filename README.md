@@ -4,21 +4,34 @@ It is using my own graphics library which wraps around opengl named [Photon](htt
 It is a really important project to me because it really encapsulates the kind of programming that I want to do
 
 ## Status
-This project is a work in progress (V2 releasing soon..)
+This project is a work in progress
 
 ## Features
 - A lot of things, discover it by yourself !
 
 ## TODO
 - Fix framebuffer bug on resize
-- Performance improvements
 - 2D
-- Change models at runtime
 
 ## Getting Started​
 
 ### Installation
-There is currently no releases for Hydrogen V2 but i'm working on it (you can still use V1 though)
+You can simply use Jitpack ! Add the following to your `pom.xml`:
+```xml
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+```
+```xml
+<dependency>
+    <groupId>com.github.XernasDev</groupId>
+    <artifactId>Hydrogen</artifactId>
+    <version>2.0.0</version>
+</dependency>
+```
 
 ## License
 This project is licensed under the GNU Affero General Public License v3.0.​

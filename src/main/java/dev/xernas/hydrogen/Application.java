@@ -3,8 +3,9 @@ package dev.xernas.hydrogen;
 import dev.xernas.hydrogen.asset.AssetManager;
 import dev.xernas.hydrogen.ecs.SceneManager;
 import dev.xernas.hydrogen.rendering.DefaultRenderer;
-import dev.xernas.hydrogen.rendering.Frame;
 import dev.xernas.hydrogen.rendering.Renderer;
+import dev.xernas.hydrogen.task.Task;
+import dev.xernas.hydrogen.task.TaskManager;
 import dev.xernas.photon.Library;
 import dev.xernas.photon.PhotonAPI;
 import dev.xernas.photon.api.IRenderer;
@@ -20,6 +21,7 @@ import static dev.xernas.hydrogen.AppConstants.FRAMETIME;
 public abstract class Application {
 
     private static final AssetManager hydroAssetManager = new AssetManager(Application.class.getClassLoader(), "shaders");
+    private static final TaskManager taskManager = new TaskManager();
 
     private static boolean running = false;
     private static float deltaTime;
@@ -40,10 +42,6 @@ public abstract class Application {
 
     public abstract void onStartup();
 
-    public Frame render(Renderer renderer, Frame frame) throws PhotonException {
-        return frame;
-    }
-
     public void onShutdown() {
 
     }
@@ -54,15 +52,16 @@ public abstract class Application {
         Window window = getWindow();
         window.start();
 
-        // Renderer stuff
-        photonRenderer = PhotonAPI.getRenderer(window, false);
-        photonRenderer.start();
-        Renderer renderer = getRenderer(photonRenderer, window);
-
         // Asset manager
         hydroAssetManager.loadShaders();
         AssetManager remoteAssetManager = getAssetManager();
         remoteAssetManager.loadShaders();
+
+        // Renderer stuff
+        photonRenderer = PhotonAPI.getRenderer(window, false);
+        photonRenderer.start();
+
+        Renderer renderer = getRenderer(photonRenderer, window);
 
         // Scene manager
         onStartup();
@@ -101,6 +100,9 @@ public abstract class Application {
             while (unprocessedTime > FRAMETIME) {
                 render = true;
                 unprocessedTime -= FRAMETIME;
+
+                taskManager.getTasks().forEach(Task::tick);
+
                 if (!window.isOpen()) {
                     running = false;
                     return;
@@ -112,12 +114,18 @@ public abstract class Application {
                     frames = 0;
                     frameCounter = 0;
                 }
+                taskManager.getTasks().forEach(task -> {
+                    float timer = task.getTimer();
+                    if (timer == 0) return;
+                    if (task.getTickCounter() >= task.getTickInterval()) {
+                        task.update(timer);
+                        task.resetCounter();
+                    }
+                });
             }
 
             if (render) {
-                Frame frame = renderer.render(SceneManager.getCurrentScene()); // Render frame with renderer according to scene
-                Frame appFrame = render(renderer, frame); // Application-level rendering
-                renderer.display(appFrame); // Display the final frame
+                renderer.render(SceneManager.getCurrentScene()); // Render frame with renderer according to scene
                 frames++;
             }
         }
@@ -153,5 +161,9 @@ public abstract class Application {
 
     public static AssetManager getHydrogenAssetManager() {
         return hydroAssetManager;
+    }
+
+    public static TaskManager getTaskManager() {
+        return taskManager;
     }
 }

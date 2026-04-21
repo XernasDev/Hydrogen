@@ -2,8 +2,8 @@
 
 // Input vertex attributes
 layout (location = 0) in vec3 in_vertexPosition; // Renamed for clarity
-layout (location = 1) in vec3 in_vertexNormal;   // Renamed for clarity
-layout (location = 2) in vec2 in_texCoord;       // Renamed for clarity
+layout (location = 1) in vec2 in_texCoord;       // Renamed for clarity
+layout (location = 2) in vec3 in_vertexNormal;   // Renamed for clarity
 
 // --- UNIFORMS ---
 // It's often more efficient to compute combined matrices on the CPU

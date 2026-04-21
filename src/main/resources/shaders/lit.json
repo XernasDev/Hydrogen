@@ -1,0 +1,11 @@
+{
+  "name": "lit",
+  "vertex": {
+    "fromHydrogen": true,
+    "path": "vertex/default.glsl"
+  },
+  "fragment": {
+    "fromHydrogen": true,
+    "path": "fragment/lit.glsl"
+  }
+}

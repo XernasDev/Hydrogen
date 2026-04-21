@@ -1,15 +1,16 @@
 package dev.xernas.hydrogen.ecs.module;
 
+import dev.xernas.atom.math.MathUtils;
 import dev.xernas.hydrogen.Application;
 import dev.xernas.hydrogen.ecs.Actor;
-import dev.xernas.hydrogen.utils.MathUtils;
+import dev.xernas.hydrogen.rendering.Renderer;
 import dev.xernas.photon.api.Transform;
 import dev.xernas.photon.api.window.Window;
 import dev.xernas.photon.api.window.input.Input;
 import dev.xernas.photon.api.window.input.Key;
 import org.joml.Vector3f;
 
-public class CameraController implements Module {
+public class CameraController extends Module {
 
     private Transform.CameraTransform cameraTransform;
 
@@ -28,7 +29,7 @@ public class CameraController implements Module {
 
 
     @Override
-    public void onStart(Actor parent, Window window) {
+    public void onStart(Actor parent, Window window, Renderer renderer) {
         if (!(parent.getTransform() instanceof Transform.CameraTransform)) throw new IllegalArgumentException("CameraController module can only be added to actors with a CameraTransform.");
         cameraTransform = (Transform.CameraTransform) parent.getTransform();
     }

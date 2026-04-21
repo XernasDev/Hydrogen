@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class AssetManager {
 
@@ -69,6 +70,7 @@ public class AssetManager {
         JSONTokener tokener = new JSONTokener(shaderJson);
         JSONObject root = new JSONObject(tokener);
         String shaderName = root.getString("name");
+        if (isAssetLoaded(shaderName)) throw new HydrogenException("Shader with name " + shaderName + " already loaded.");
         JSONObject vertex = root.getJSONObject("vertex");
         JSONObject fragment = root.getJSONObject("fragment");
         boolean vertexFromHydro = vertex.getBoolean("fromHydrogen");
@@ -76,14 +78,14 @@ public class AssetManager {
         ShaderResource vertexResource = vertexFromHydro ? Application.getHydrogenAssetManager().loadShaderResource(vertex.getString("path")) : loadShaderResource(vertex.getString("path"));
         ShaderResource fragmentResource = fragmentFromHydro ? Application.getHydrogenAssetManager().loadShaderResource(fragment.getString("path")) : loadShaderResource(fragment.getString("path"));
         Shader shader = new Shader(vertexResource, fragmentResource);
-        Asset.ShaderAsset shaderAsset = new Asset.ShaderAsset(path.toString(), shaderName, shader);
+        Asset.ShaderAsset shaderAsset = new Asset.ShaderAsset(path.toString(), shaderName, this, shader);
         loadedAssets.put(shaderName, shaderAsset);
     }
 
     public void loadShaders() throws HydrogenException {
         Path shadersDirPath = getFilePath(shadersDirectory);
         try {
-            List<Path> shaderFiles = PathHelper.list(shadersDirPath);
+            Set<Path> shaderFiles = PathHelper.list(shadersDirPath);
             for (Path shaderFile : shaderFiles) {
                 if (!FileUtils.getFileExtension(shaderFile.getFileName().toString()).equalsIgnoreCase("json")) continue;
                 loadShader(shaderFile);
@@ -91,6 +93,11 @@ public class AssetManager {
         } catch (IOException e) {
             throw new HydrogenException("Failed to list shader files in directory: " + shadersDirectory, e);
         }
+    }
+
+    public boolean isAssetLoaded(String name) throws HydrogenException {
+        Asset asset = loadedAssets.get(name);
+        return asset != null && asset.getOwner() == this;
     }
 
 }

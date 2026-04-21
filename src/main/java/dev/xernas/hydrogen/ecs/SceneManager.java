@@ -37,7 +37,7 @@ public class SceneManager {
         getCurrentScene().input(window.getInput());
     }
 
-    public static void shutdown() {
+    public static void shutdown() throws PhotonException {
         getCurrentScene().stop();
     }
 
