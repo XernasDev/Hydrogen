@@ -29,7 +29,7 @@ You can simply use Jitpack ! Add the following to your `pom.xml`:
 <dependency>
     <groupId>com.github.XernasDev</groupId>
     <artifactId>Hydrogen</artifactId>
-    <version>2.1.0</version>
+    <version>2.1.1</version>
 </dependency>
 ```
 
