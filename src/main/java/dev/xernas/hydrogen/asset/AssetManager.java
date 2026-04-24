@@ -35,6 +35,7 @@ public class AssetManager {
         this.texturesDirectory = texturesDirectory;
     }
 
+    //TODO Fix extension of textures in asset name and add "texture.[name]" or "shader.[name]" prefix for asset types
     public static <T extends Asset> T getAssetByName(String name) throws HydrogenException {
         Asset asset = loadedAssets.get(name);
         if (asset == null) throw new HydrogenException("No asset found with name: " + name);

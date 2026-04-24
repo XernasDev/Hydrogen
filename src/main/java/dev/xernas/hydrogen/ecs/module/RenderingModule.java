@@ -37,7 +37,7 @@ public class RenderingModule extends Module {
     @Override
     public void onRender(RenderingData data, IRenderer<IFramebuffer, IShader, IMesh, ITexture> renderer) {
         IShader shader = data.getShader();
-        shader.setUniform("u_color", data.getMaterial().getBaseColor());
+        if (data.getMaterial().getBaseColor() != null) shader.setUniform("u_color", data.getMaterial().getBaseColor());
         if (data.getTexture() != null) {
             shader.setUniform("u_useTexture", true);
             renderer.useTexture("u_sampler", data.getTexture(), 0, shader);
