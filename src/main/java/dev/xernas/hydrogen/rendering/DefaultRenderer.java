@@ -5,7 +5,6 @@ import dev.xernas.hydrogen.asset.Asset;
 import dev.xernas.hydrogen.asset.AssetManager;
 import dev.xernas.hydrogen.ecs.Actor;
 import dev.xernas.hydrogen.ecs.module.GlobalModule;
-import dev.xernas.hydrogen.ecs.module.LightSource;
 import dev.xernas.hydrogen.ecs.module.RenderingModule;
 import dev.xernas.hydrogen.ecs.Scene;
 import dev.xernas.hydrogen.rendering.material.Material;
@@ -22,7 +21,6 @@ import dev.xernas.photon.exceptions.PhotonException;
 import dev.xernas.photon.utils.MatrixUtils;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
 import java.awt.*;
 import java.util.*;
@@ -57,15 +55,13 @@ public class DefaultRenderer implements Renderer {
                 // Vertex
                 Matrix4f modelMatrix = MatrixUtils.createTransformationMatrix(actor.getTransform());
                 shader.setUniform("u_modelMatrix", modelMatrix);
-                if (scene.is3D()) {
-                    shader.setUniform("u_viewProjectionMatrix",
-                            MatrixUtils.createProjectionMatrix(window, 80, 0.1f, 1000f)
-                                    .mul(MatrixUtils.createViewMatrix((Transform.CameraTransform) scene.getCameraActor().getTransform())));
+                if (data.getModelObj().usePerspective()) {
+                    shader.setUniform("u_projectionMatrix", MatrixUtils.createProjectionMatrix(window, 80, 0.1f, 1000f));
+                    shader.setUniform("u_viewMatrix", MatrixUtils.createViewMatrix((Transform.CameraTransform) scene.getCameraActor().getTransform()));
                 }
                 else {
-                    shader.setUniform("u_viewProjectionMatrix",
-                            MatrixUtils.createOrthoMatrix(window)
-                                    .mul(MatrixUtils.create2DViewMatrix((Transform.CameraTransform) scene.getCameraActor().getTransform())));
+                    shader.setUniform("u_projectionMatrix", MatrixUtils.createOrthoMatrix(window));
+                    shader.setUniform("u_viewMatrix", MatrixUtils.create2DViewMatrix((Transform.CameraTransform) scene.getCameraActor().getTransform()));
                 }
                 shader.setUniform("u_normalMatrix", new Matrix3f(modelMatrix).invert().transpose());
                 shader.setUniform("u_cameraWorldPos", scene.getCameraActor().getTransform().getPosition());
@@ -84,27 +80,14 @@ public class DefaultRenderer implements Renderer {
         for (Actor renderableActor : scene.getActorsWithModule(RenderingModule.class)) {
             if (loadedActors.contains(renderableActor)) continue;
             RenderingModule renderingModule = renderableActor.getModule(RenderingModule.class);
-
-            Asset.ShaderAsset shaderAsset = AssetManager.getAssetByName(renderingModule.getShader());
-            if (shaderAsset == null) throw new HydrogenException("Shader not found: " + renderingModule.getShader());
-            Shader shader = shaderAsset.getShader();
-            Model model = renderingModule.getModel();
-            if (model.is3D()) scene.set3D(true);
-            Material material = renderingModule.getMaterial();
-
-            RenderingData data = new RenderingData(shader, model, material);
-            data.load(renderer);
+            RenderingData data = loadRenderingDataOfModule(renderingModule);
             loadedData.put(renderableActor, data);
             loadedActors.add(renderableActor);
         }
         if (isNotSceneLoaded(scene)) currentScene = scene;
     }
 
-    @Override
-    public void loadActor(Actor actor) throws PhotonException {
-        if (!actor.hasModule(RenderingModule.class)) return;
-        RenderingModule renderingModule = actor.getModule(RenderingModule.class);
-
+    private RenderingData loadRenderingDataOfModule(RenderingModule renderingModule) throws PhotonException {
         Asset.ShaderAsset shaderAsset = AssetManager.getAssetByName(renderingModule.getShader());
         if (shaderAsset == null) throw new HydrogenException("Shader not found: " + renderingModule.getShader());
         Shader shader = shaderAsset.getShader();
@@ -113,6 +96,14 @@ public class DefaultRenderer implements Renderer {
 
         RenderingData data = new RenderingData(shader, model, material);
         data.load(renderer);
+        return data;
+    }
+
+    @Override
+    public void loadActor(Actor actor) throws PhotonException {
+        if (!actor.hasModule(RenderingModule.class)) return;
+        RenderingModule renderingModule = actor.getModule(RenderingModule.class);
+        RenderingData data = loadRenderingDataOfModule(renderingModule);
         loadedData.put(actor, data);
     }
 

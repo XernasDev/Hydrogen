@@ -48,6 +48,10 @@ public class RenderingData {
         loaded = false;
     }
 
+    public Model getModelObj() {
+        return modelObj;
+    }
+
     public IShader getShader() {
         return shader;
     }

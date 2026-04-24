@@ -118,7 +118,7 @@ public class AssetManager {
         boolean fragmentFromHydro = fragment.getBoolean("fromHydrogen");
         ShaderResource vertexResource = vertexFromHydro ? Application.getHydrogenAssetManager().loadShaderResource(vertex.getString("path")) : loadShaderResource(vertex.getString("path"));
         ShaderResource fragmentResource = fragmentFromHydro ? Application.getHydrogenAssetManager().loadShaderResource(fragment.getString("path")) : loadShaderResource(fragment.getString("path"));
-        Shader shader = new Shader(vertexResource, fragmentResource);
+        Shader shader = new Shader(shaderName, vertexResource, fragmentResource);
         Asset.ShaderAsset shaderAsset = new Asset.ShaderAsset(path.toString(), shaderName, this, shader);
         loadedAssets.put(shaderName, shaderAsset);
     }

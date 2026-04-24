@@ -24,8 +24,6 @@ public class Scene {
 
     private Actor cameraActor;
 
-    private boolean is3D;
-
     public Scene(String name, Actor... actors) {
         this.name = name;
         for (Actor actor : actors) {
@@ -133,13 +131,5 @@ public class Scene {
 
     private boolean isNotRendererLoaded() {
         return renderer == null;
-    }
-
-    public boolean is3D() {
-        return is3D;
-    }
-
-    public void set3D(boolean is3D) {
-        this.is3D = is3D;
     }
 }

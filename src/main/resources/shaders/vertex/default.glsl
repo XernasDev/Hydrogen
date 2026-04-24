@@ -6,10 +6,9 @@ layout (location = 1) in vec2 in_texCoord;       // Renamed for clarity
 layout (location = 2) in vec3 in_vertexNormal;   // Renamed for clarity
 
 // --- UNIFORMS ---
-// It's often more efficient to compute combined matrices on the CPU
-uniform mat4 u_modelMatrix;        // Renamed from transformMatrix (Model -> World)
-uniform mat4 u_viewProjectionMatrix; // Combined View * Projection matrix (World -> Clip Space)
-// Calculated on CPU: projectionMatrix * viewMatrix
+uniform mat4 u_modelMatrix;
+uniform mat4 u_projectionMatrix;
+uniform mat4 u_viewMatrix;
 
 // Optional: Pass normal matrix if non-uniform scaling is used.
 // Calculated on CPU: transpose(inverse(mat3(u_modelMatrix)))
@@ -31,7 +30,7 @@ void main() {
     vs_out_worldPos = worldPos4.xyz; // Pass only vec3
 
     // Calculate final clip space position using pre-combined matrix
-    gl_Position = u_viewProjectionMatrix * worldPos4;
+    gl_Position = u_projectionMatrix * u_viewMatrix * worldPos4;
 
     // Transform normal to world space using the normal matrix and normalize
     // Normalization is important as interpolation in fragment shader can change length

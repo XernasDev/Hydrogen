@@ -40,11 +40,7 @@ public class RenderingModule extends Module {
         shader.setUniform("u_color", data.getMaterial().getBaseColor());
         if (data.getTexture() != null) {
             shader.setUniform("u_useTexture", true);
-            try {
-                renderer.useTexture("u_sampler", data.getTexture(), 0, shader);
-            } catch (PhotonException e) {
-                throw new RuntimeException(e);
-            }
+            renderer.useTexture("u_sampler", data.getTexture(), 0, shader);
         }
         else shader.setUniform("u_useTexture", false);
     }

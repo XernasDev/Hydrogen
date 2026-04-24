@@ -6,6 +6,8 @@ import dev.xernas.hydrogen.rendering.DefaultRenderer;
 import dev.xernas.hydrogen.rendering.Renderer;
 import dev.xernas.hydrogen.task.Task;
 import dev.xernas.hydrogen.task.TaskManager;
+import dev.xernas.hydrogen.utils.ui.PositionConverter;
+import dev.xernas.hydrogen.utils.ui.UnitHelper;
 import dev.xernas.photon.Library;
 import dev.xernas.photon.PhotonAPI;
 import dev.xernas.photon.api.IRenderer;
@@ -40,7 +42,7 @@ public abstract class Application {
         return new DefaultRenderer(renderer, window);
     }
 
-    public abstract void onStartup();
+    public abstract void onStartup() throws HydrogenException;
 
     public void onShutdown() {
 
@@ -58,6 +60,10 @@ public abstract class Application {
         AssetManager remoteAssetManager = getAssetManager();
         remoteAssetManager.loadShaders();
         remoteAssetManager.loadTextures();
+
+        // UI Inits
+        PositionConverter.init(window);
+        UnitHelper.init(window);
 
         // Renderer stuff
         photonRenderer = PhotonAPI.getRenderer(window, false);
