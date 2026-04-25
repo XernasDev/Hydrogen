@@ -104,7 +104,7 @@ public class PositionConverter {
         return new Vector2i(pixelX, pixelY);
     }
 
-    public static Vector2i worldPosToPixelPos(Vector3f worldPos) {
+    public static Vector2i worldPosToPixelPos(float x, float y) {
         int windowWidth = window.getWidth();
         int windowHeight = window.getHeight();
 
@@ -115,8 +115,8 @@ public class PositionConverter {
             // Horizontal screen
             aspectRatio = (float) windowWidth / windowHeight;
 
-            float ndcX = (worldPos.x + aspectRatio) / (2.0f * aspectRatio); // → [0, 1]
-            float ndcY = (1.0f - worldPos.y) / 2.0f;                        // → [0, 1]
+            float ndcX = (x + aspectRatio) / (2.0f * aspectRatio); // → [0, 1]
+            float ndcY = (1.0f - y) / 2.0f;                        // → [0, 1]
 
             pixelX = Math.round(ndcX * windowWidth);
             pixelY = Math.round(ndcY * windowHeight);
@@ -124,8 +124,8 @@ public class PositionConverter {
             // Vertical screen
             aspectRatio = (float) windowHeight / windowWidth;
 
-            float ndcX = (worldPos.x + 1.0f) / 2.0f;
-            float ndcY = (worldPos.y) / (2.0f * aspectRatio);
+            float ndcX = (x + 1.0f) / 2.0f;
+            float ndcY = (y) / (2.0f * aspectRatio);
 
             pixelX = Math.round(ndcX * windowWidth);
             pixelY = Math.round(ndcY * windowHeight);
@@ -134,7 +134,7 @@ public class PositionConverter {
         return new Vector2i(pixelX, pixelY);
     }
 
-    public static Vector2i worldScaleToPixelScale(Vector3f worldScale) {
+    public static Vector2i worldScaleToPixelScale(float x, float y) {
         int windowWidth = window.getWidth();
         int windowHeight = window.getHeight();
 
@@ -144,13 +144,13 @@ public class PositionConverter {
         if (windowWidth >= windowHeight) {
             // Horizontal screen
             aspectRatio = (float) windowWidth / windowHeight;
-            pixelWidth = Math.round((worldScale.x / (2.0f * aspectRatio)) * windowWidth);
-            pixelHeight = Math.round((worldScale.y / 2.0f) * windowHeight);
+            pixelWidth = Math.round((x / (2.0f * aspectRatio)) * windowWidth);
+            pixelHeight = Math.round((y / 2.0f) * windowHeight);
         } else {
             // Vertical screen
             aspectRatio = (float) windowHeight / windowWidth;
-            pixelWidth = Math.round((worldScale.x / 2.0f) * windowWidth);
-            pixelHeight = Math.round((worldScale.y / (2.0f * aspectRatio)) * windowHeight);
+            pixelWidth = Math.round((x / 2.0f) * windowWidth);
+            pixelHeight = Math.round((y / (2.0f * aspectRatio)) * windowHeight);
         }
 
         return new Vector2i(pixelWidth, pixelHeight);

@@ -1,5 +1,6 @@
 package dev.xernas.hydrogen.ecs;
 
+import dev.xernas.hydrogen.Application;
 import dev.xernas.hydrogen.HydrogenException;
 import dev.xernas.hydrogen.ecs.module.GlobalModule;
 import dev.xernas.hydrogen.ecs.module.Module;
@@ -19,6 +20,7 @@ public class Scene {
 
     private final List<GlobalModule> globalModules = new ArrayList<>();
 
+    private Application app;
     private Window window;
     private Renderer renderer;
 
@@ -32,12 +34,13 @@ public class Scene {
         }
     }
 
-    public void load(Window window, Renderer renderer) throws PhotonException {
+    public void load(Application app, Window window, Renderer renderer) throws PhotonException {
         if (!hasCameraActor()) throw new HydrogenException("Scene " + name + " must have at least one camera actor to be loaded.");
         cameraActor = findCameraActor();
         renderer.loadScene(this);
-        actors.forEach(actor -> actor.start(window, renderer));
+        actors.forEach(actor -> actor.start(app, window, renderer));
 
+        this.app = app;
         this.window = window;
         this.renderer = renderer;
     }
@@ -70,7 +73,7 @@ public class Scene {
         } catch (PhotonException e) {
             e.printStackTrace(); // It'll do it for now but i have to do better error handling next
         }
-        actor.start(window, renderer);
+        actor.start(app, window, renderer);
     }
 
     public void destroyActor(Actor actor) {

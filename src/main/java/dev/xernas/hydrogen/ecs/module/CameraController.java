@@ -29,7 +29,7 @@ public class CameraController extends Module {
 
 
     @Override
-    public void onStart(Actor parent, Window window, Renderer renderer) {
+    public void onStart(Application app, Actor parent, Window window, Renderer renderer) {
         if (!(parent.getTransform() instanceof Transform.CameraTransform)) throw new IllegalArgumentException("CameraController module can only be added to actors with a CameraTransform.");
         cameraTransform = (Transform.CameraTransform) parent.getTransform();
     }

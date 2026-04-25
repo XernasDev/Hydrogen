@@ -76,6 +76,7 @@ public class DefaultRenderer implements Renderer {
 
     @Override
     public void loadScene(Scene scene) throws PhotonException {
+        renderer.start();
         List<Actor> loadedActors = new ArrayList<>();
         for (Actor renderableActor : scene.getActorsWithModule(RenderingModule.class)) {
             if (loadedActors.contains(renderableActor)) continue;
@@ -85,18 +86,6 @@ public class DefaultRenderer implements Renderer {
             loadedActors.add(renderableActor);
         }
         if (isNotSceneLoaded(scene)) currentScene = scene;
-    }
-
-    private RenderingData loadRenderingDataOfModule(RenderingModule renderingModule) throws PhotonException {
-        Asset.ShaderAsset shaderAsset = AssetManager.getAssetByName(renderingModule.getShader());
-        if (shaderAsset == null) throw new HydrogenException("Shader not found: " + renderingModule.getShader());
-        Shader shader = shaderAsset.getShader();
-        Model model = renderingModule.getModel();
-        Material material = renderingModule.getMaterial();
-
-        RenderingData data = new RenderingData(shader, model, material);
-        data.load(renderer);
-        return data;
     }
 
     @Override
@@ -115,6 +104,8 @@ public class DefaultRenderer implements Renderer {
         }
         loadedData.clear();
         currentScene = null;
+        renderer.dispose();
+        renderer.empty();
     }
 
     @Override
@@ -124,6 +115,31 @@ public class DefaultRenderer implements Renderer {
         if (!data.isLoaded()) return;
         data.unload(renderer);
         loadedData.remove(actor);
+    }
+
+    @Override
+    public void reloadActor(Actor actor) {
+        if (!loadedData.containsKey(actor)) return;
+        RenderingData data = loadedData.get(actor);
+        if (!data.isLoaded()) return;
+        try {
+            data.unload(renderer);
+            data.load(renderer);
+        } catch (PhotonException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private RenderingData loadRenderingDataOfModule(RenderingModule renderingModule) throws PhotonException {
+        Asset.ShaderAsset shaderAsset = AssetManager.getAssetByName(renderingModule.getShader());
+        if (shaderAsset == null) throw new HydrogenException("Shader not found: " + renderingModule.getShader());
+        Shader shader = shaderAsset.getShader();
+        Model model = renderingModule.getModel();
+        Material material = renderingModule.getMaterial();
+
+        RenderingData data = new RenderingData(shader, model, material);
+        data.load(renderer);
+        return data;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package dev.xernas.hydrogen.ecs;
 
+import dev.xernas.hydrogen.Application;
 import dev.xernas.hydrogen.ecs.module.Module;
 import dev.xernas.hydrogen.rendering.Renderer;
 import dev.xernas.hydrogen.rendering.RenderingData;
@@ -55,18 +56,18 @@ public class Actor {
         return transform;
     }
 
-    public void start(Window window, Renderer renderer) {
-        modules.values().forEach(module -> module.enable(this, window, renderer));
+    public void start(Application app, Window window, Renderer renderer) {
+        modules.values().forEach(module -> module.enable(app, this, window, renderer));
     }
 
     public void update() {
-        modules.values().forEach(module -> {
+        new ArrayList<>(modules.values()).forEach(module -> {
             if (module.isActive()) module.onUpdate();
         });
     }
 
     public void input(Input input) {
-        modules.values().forEach(module -> {
+        new ArrayList<>(modules.values()).forEach(module -> {
             if (module.isActive()) module.onInput(input);
         });
     }

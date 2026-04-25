@@ -29,15 +29,15 @@ public class UnitHelper {
         return getSize(number, text);
     }
 
-    public static IntSupplier getSize(int number, String unit) throws HydrogenException {
+    public static IntSupplier getSize(int number, String unit) {
         return getSize(number, getUnitFromStr(unit));
     }
 
-    public static IntSupplier getSize(IntSupplier number, String unit) throws HydrogenException {
+    public static IntSupplier getSize(IntSupplier number, String unit) {
         return getSize(number, getUnitFromStr(unit));
     }
 
-    public static IntSupplier getSize(int number, Unit unit) throws HydrogenException {
+    public static IntSupplier getSize(int number, Unit unit) {
         switch (unit) {
             case Unit.PIXEL -> {
                 return () -> number;
@@ -54,11 +54,11 @@ public class UnitHelper {
                     return (int) (percent * window.getHeight());
                 };
             }
-            default -> throw new HydrogenException("Couldn't recognise the unit enum");
+            default -> throw new IllegalArgumentException("Couldn't recognise the unit enum");
         }
     }
 
-    public static IntSupplier getSize(IntSupplier number, Unit unit) throws HydrogenException {
+    public static IntSupplier getSize(IntSupplier number, Unit unit) {
         switch (unit) {
             case Unit.PIXEL -> {
                 return number;
@@ -75,12 +75,12 @@ public class UnitHelper {
                     return (int) (percent * window.getHeight());
                 };
             }
-            default -> throw new HydrogenException("Couldn't recognise the unit enum");
+            default -> throw new IllegalArgumentException("Couldn't recognise the unit enum");
         }
     }
 
     public static IntSupplier add(IntSupplier first, IntSupplier second) {
-        return () -> first.getAsInt() - second.getAsInt();
+        return () -> first.getAsInt() + second.getAsInt();
     }
 
     public static IntSupplier sub(IntSupplier first, IntSupplier second) {
@@ -91,7 +91,7 @@ public class UnitHelper {
         return () -> (int) (size.getAsInt() * scalar);
     }
 
-    public static Unit getUnitFromStr(String unit) throws HydrogenException {
+    public static Unit getUnitFromStr(String unit) {
         switch (unit.toLowerCase(Locale.ROOT)) {
             case "px" -> {
                 return Unit.PIXEL;
@@ -102,7 +102,7 @@ public class UnitHelper {
             case "vh" -> {
                 return Unit.VIEW_HEIGHT;
             }
-            default -> throw new HydrogenException("Couldn't recognise the unit");
+            default -> throw new IllegalArgumentException("Couldn't recognise the unit");
         }
     }
 

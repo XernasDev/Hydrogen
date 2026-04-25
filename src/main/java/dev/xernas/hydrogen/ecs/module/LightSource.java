@@ -1,6 +1,7 @@
 package dev.xernas.hydrogen.ecs.module;
 
 import dev.xernas.hydrogen.AppConstants;
+import dev.xernas.hydrogen.Application;
 import dev.xernas.hydrogen.ecs.Actor;
 import dev.xernas.hydrogen.rendering.Renderer;
 import dev.xernas.hydrogen.rendering.RenderingData;
@@ -40,7 +41,7 @@ public class LightSource extends GlobalModule {
     }
 
     @Override
-    public void onStart(Actor actor, Window window, Renderer renderer) {
+    public void onStart(Application app, Actor actor, Window window, Renderer renderer) {
         this.transform = actor.getTransform();
         numberOfLights++;
     }

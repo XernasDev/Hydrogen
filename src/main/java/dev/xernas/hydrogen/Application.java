@@ -28,7 +28,6 @@ public abstract class Application {
     private static boolean running = false;
     private static float deltaTime;
     private static int fps = 0;
-    private static IRenderer<IFramebuffer, IShader, IMesh, ITexture> photonRenderer;
 
     public abstract Library getLibrary();
     public abstract String getName();
@@ -66,15 +65,13 @@ public abstract class Application {
         UnitHelper.init(window);
 
         // Renderer stuff
-        photonRenderer = PhotonAPI.getRenderer(window, false);
-        photonRenderer.start();
-
+        IRenderer<IFramebuffer, IShader, IMesh, ITexture> photonRenderer = PhotonAPI.getRenderer(window, false);
         Renderer renderer = getRenderer(photonRenderer, window);
 
         // Scene manager
         onStartup();
         try {
-            SceneManager.startup(window, renderer);
+            SceneManager.startup(this, window, renderer);
         } catch (PhotonException e) {
             throw new HydrogenException("Failed to start SceneManager", e);
         }
@@ -142,13 +139,7 @@ public abstract class Application {
         onShutdown();
         SceneManager.shutdown();
         // ---- Cleanup ---- //
-        photonRenderer.dispose();
         window.dispose();
-    }
-
-    public final void resetPhotonRenderer() throws PhotonException {
-        photonRenderer.dispose();
-        photonRenderer.start();
     }
 
     public static void stop() {

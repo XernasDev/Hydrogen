@@ -18,12 +18,9 @@ public interface Renderer {
 
     void unloadActor(Actor actor) throws PhotonException;
 
-    void setClearColor(Color color);
+    void reloadActor(Actor actor);
 
-    default void reloadActor(Actor actor) throws PhotonException {
-        unloadActor(actor);
-        loadActor(actor);
-    }
+    void setClearColor(Color color);
 
     default void changeScene(Scene scene) throws PhotonException {
         unloadScene();

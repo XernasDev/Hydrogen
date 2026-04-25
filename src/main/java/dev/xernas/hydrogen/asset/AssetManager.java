@@ -16,10 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class AssetManager {
 
@@ -37,13 +34,23 @@ public class AssetManager {
 
     //TODO Fix extension of textures in asset name and add "texture.[name]" or "shader.[name]" prefix for asset types
     public static <T extends Asset> T getAssetByName(String name) throws HydrogenException {
-        Asset asset = loadedAssets.get(name);
+        Asset asset = searchForAssetWithName(name.toLowerCase());
         if (asset == null) throw new HydrogenException("No asset found with name: " + name);
         try {
             return (T) asset;
         } catch (ClassCastException e) {
             throw new HydrogenException("Asset with name " + name + " is not of the expected type.");
         }
+    }
+
+    private static Asset searchForAssetWithName(String name) {
+        Asset asset = loadedAssets.get(name);
+        if (asset != null) return asset;
+        Asset shaderAsset = loadedAssets.get("shader." + name);
+        if (shaderAsset != null) return shaderAsset;
+        Asset textureAsset = loadedAssets.get("texture." + name);
+        if (textureAsset != null) return textureAsset;
+        return null;
     }
 
     private Path getFilePath(String resourcePath, boolean isDirectory) throws HydrogenException {
@@ -85,8 +92,9 @@ public class AssetManager {
         try {
             ImageReader reader = new ImageReader(textureInput);
             Texture texture = new Texture(reader.getWidth(), reader.getHeight(), reader.getData());
-            Asset.TextureAsset asset = new Asset.TextureAsset(path.toString(), path.getFileName().toString(), this, texture);
-            loadedAssets.put(asset.getName(), asset);
+            String assetName = "texture." + path.getFileName().toString().toLowerCase();
+            Asset.TextureAsset asset = new Asset.TextureAsset(path.toString(), assetName, this, texture);
+            loadedAssets.put(assetName, asset);
         } catch (IOException e) {
             throw new HydrogenException("Failed to read the texture file", e);
         }
@@ -119,9 +127,10 @@ public class AssetManager {
         boolean fragmentFromHydro = fragment.getBoolean("fromHydrogen");
         ShaderResource vertexResource = vertexFromHydro ? Application.getHydrogenAssetManager().loadShaderResource(vertex.getString("path")) : loadShaderResource(vertex.getString("path"));
         ShaderResource fragmentResource = fragmentFromHydro ? Application.getHydrogenAssetManager().loadShaderResource(fragment.getString("path")) : loadShaderResource(fragment.getString("path"));
-        Shader shader = new Shader(shaderName, vertexResource, fragmentResource);
-        Asset.ShaderAsset shaderAsset = new Asset.ShaderAsset(path.toString(), shaderName, this, shader);
-        loadedAssets.put(shaderName, shaderAsset);
+        Shader shader = new Shader(shaderName.toLowerCase(), vertexResource, fragmentResource);
+        String assetName = "shader." + shaderName.toLowerCase();
+        Asset.ShaderAsset shaderAsset = new Asset.ShaderAsset(path.toString(), assetName, this, shader);
+        loadedAssets.put(assetName, shaderAsset);
     }
 
     public void loadShaders() throws HydrogenException {

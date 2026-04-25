@@ -1,5 +1,6 @@
 package dev.xernas.hydrogen.ecs.module;
 
+import dev.xernas.hydrogen.Application;
 import dev.xernas.hydrogen.ecs.Actor;
 import dev.xernas.hydrogen.rendering.Renderer;
 import dev.xernas.hydrogen.rendering.RenderingData;
@@ -29,7 +30,7 @@ public class RenderingModule extends Module {
     }
 
     @Override
-    public void onStart(Actor actor, Window window, Renderer renderer) {
+    public void onStart(Application app, Actor actor, Window window, Renderer renderer) {
         this.actor = actor;
         this.renderer = renderer;
     }
@@ -47,20 +48,12 @@ public class RenderingModule extends Module {
 
     public void setModel(Model model) {
         this.model = model;
-        try {
-            renderer.reloadActor(actor);
-        } catch (PhotonException e) {
-            e.printStackTrace(); // Pour l'instant mais on va handle ça proprement (il faut un nouveau systeme d'erreurs pour les boucles principales)
-        }
+        renderer.reloadActor(actor);
     }
 
     public void setMaterial(Material material) {
         this.material = material;
-        try {
-            renderer.reloadActor(actor);
-        } catch (PhotonException e) {
-            e.printStackTrace(); // Pour l'instant mais on va handle ça proprement (il faut un nouveau systeme d'erreurs pour les boucles principales)
-        }
+        renderer.reloadActor(actor);
     }
 
     public String getShader() {

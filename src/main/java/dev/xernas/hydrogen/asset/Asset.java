@@ -20,7 +20,10 @@ public class Asset {
     }
 
     public String getName() {
-        return name;
+        String[] split = name.split("\\.");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 1; i < split.length; i++) sb.append(split[i]);
+        return sb.toString();
     }
 
     public AssetManager getOwner() {

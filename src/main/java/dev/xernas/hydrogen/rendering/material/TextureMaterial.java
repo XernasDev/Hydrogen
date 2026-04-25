@@ -29,4 +29,7 @@ public class TextureMaterial implements Material {
         return texture;
     }
 
+    public Asset.TextureAsset getTextureAsset() {
+        return asset;
+    }
 }
