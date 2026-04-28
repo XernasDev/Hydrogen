@@ -30,6 +30,7 @@ public class Scene {
         this.name = name;
         for (Actor actor : actors) {
             this.actors.add(actor);
+            actor.setScene(this);
             actorNames.put(actor.getName(), actor);
         }
     }
@@ -61,13 +62,14 @@ public class Scene {
     public Scene newActor(Actor actor) {
         actors.add(actor);
         actorNames.put(actor.getName(), actor);
+        actor.setScene(this);
         if (actor.hasModule(GlobalModule.class)) globalModules.add(actor.getModule(GlobalModule.class));
         return this;
     }
 
     public void instantiate(Actor actor) {
         if (isNotRendererLoaded()) return;
-        newActor(actor);
+        if (!actor.isChild()) newActor(actor);
         try {
             renderer.loadActor(actor);
         } catch (PhotonException e) {
@@ -78,15 +80,17 @@ public class Scene {
 
     public void destroyActor(Actor actor) {
         if (isNotRendererLoaded()) return;
-        if (actor.hasModule(GlobalModule.class)) globalModules.remove(actor.getModule(GlobalModule.class));
+        if (!actor.isChild()) if (actor.hasModule(GlobalModule.class)) globalModules.remove(actor.getModule(GlobalModule.class));
         actor.stop();
         try {
             renderer.unloadActor(actor);
         } catch (PhotonException e) {
             e.printStackTrace(); // It'll do it for now but i have to do better error handling next
         }
-        actors.remove(actor);
-        actorNames.remove(actor.getName());
+        if (!actor.isChild()) {
+            actors.remove(actor);
+            actorNames.remove(actor.getName());
+        }
     }
 
     public String getName() {
@@ -107,9 +111,11 @@ public class Scene {
 
     // Do NOT execute this every frame !
     public List<Actor> getActorsWithModule(Class<? extends Module> moduleClass) {
-        return actors.stream()
-                     .filter(actor -> actor.hasModule(moduleClass))
-                     .toList();
+        List<Actor> moduleActors = new ArrayList<>(actors.stream()
+                .filter(actor -> actor.hasModule(moduleClass))
+                .toList());
+        actors.forEach(actor -> moduleActors.addAll(actor.getChildrenWithModule(moduleClass)));
+        return moduleActors;
     }
 
     public List<GlobalModule> getGlobalModules() {

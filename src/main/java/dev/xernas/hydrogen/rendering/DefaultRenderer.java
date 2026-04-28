@@ -67,6 +67,7 @@ public class DefaultRenderer implements Renderer {
                 shader.setUniform("u_cameraWorldPos", scene.getCameraActor().getTransform().getPosition());
 
                 for (GlobalModule globalModule : scene.getGlobalModules()) globalModule.onGlobalRender(shader, actor, renderer);
+                for (GlobalModule globalModule : actor.getChildrenGlobalModules()) globalModule.onGlobalRender(shader, actor, renderer);
 
                 // Actor rendering
                 actor.render(data, renderer);

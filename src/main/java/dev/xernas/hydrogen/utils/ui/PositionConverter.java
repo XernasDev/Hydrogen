@@ -12,7 +12,7 @@ public class PositionConverter {
         PositionConverter.window = window;
     }
 
-    public static Vector3f pixelScaledPosToWorldScaledPos(int x, int y, int width, int height) {
+    public static Vector3f pixelScaledPosToWorldScaledPos(int x, int y, int width, int height, float zIndex) {
         int windowWidth = window.getWidth();
         int windowHeight = window.getHeight();
 
@@ -44,7 +44,7 @@ public class PositionConverter {
         worldX += scaleX / 2.0f;
         worldY -= scaleY / 2.0f;
 
-        return new Vector3f(worldX, worldY, 0);
+        return new Vector3f(worldX, worldY, zIndex);
     }
 
     public static Vector3f pixelScaleToWorldScale(int width, int height) {

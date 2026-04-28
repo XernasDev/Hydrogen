@@ -16,13 +16,13 @@ public abstract class MouseBox extends Module {
     private boolean isInside;
 
     @Override
-    public final void onStart(Application app, Actor actor, Window window, Renderer renderer) {
+    public void onStart(Application app, Actor actor, Window window, Renderer renderer) {
         if (!(actor.getTransform() instanceof UITransform)) throw new IllegalStateException("Actor " + actor.getName() + " has to have a UI Transform to have a ui element attached");
         this.transform = (UITransform) actor.getTransform();
     }
 
     @Override
-    public final void onInput(Input input) {
+    public void onInput(Input input) {
         Mouse mouse = input.getMouse();
         // This condition is fulfilled if the mouse is inside the confines of the UI Transform
         if (
@@ -49,4 +49,7 @@ public abstract class MouseBox extends Module {
     public abstract void onMouseLeave();
     public abstract void whileInside(Input input);
 
+    public UITransform getUITransform() {
+        return transform;
+    }
 }

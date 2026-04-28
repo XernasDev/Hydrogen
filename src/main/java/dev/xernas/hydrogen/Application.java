@@ -22,7 +22,7 @@ import static dev.xernas.hydrogen.AppConstants.FRAMETIME;
 
 public abstract class Application {
 
-    private static final AssetManager hydroAssetManager = new AssetManager(Application.class.getClassLoader(), "shaders", "textures");
+    private static final AssetManager hydroAssetManager = new AssetManager(Application.class.getClassLoader(), "shaders", "textures", "fonts");
     private static final TaskManager taskManager = new TaskManager();
 
     private static boolean running = false;
@@ -56,9 +56,11 @@ public abstract class Application {
         // Asset manager
         hydroAssetManager.loadShaders();
         hydroAssetManager.loadTextures();
+        hydroAssetManager.loadFonts();
         AssetManager remoteAssetManager = getAssetManager();
         remoteAssetManager.loadShaders();
         remoteAssetManager.loadTextures();
+        remoteAssetManager.loadFonts();
 
         // UI Inits
         PositionConverter.init(window);

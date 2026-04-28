@@ -1,0 +1,11 @@
+{
+  "name": "text",
+  "vertex": {
+    "fromHydrogen": true,
+    "path": "vertex/ui.glsl"
+  },
+  "fragment": {
+    "fromHydrogen": true,
+    "path": "fragment/text.glsl"
+  }
+}

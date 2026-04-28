@@ -1,11 +1,9 @@
 package dev.xernas.hydrogen.ecs.ui;
 
-import dev.xernas.hydrogen.HydrogenException;
 import dev.xernas.hydrogen.utils.ui.PositionConverter;
 import dev.xernas.hydrogen.utils.ui.UnitHelper;
 import dev.xernas.photon.api.Transform;
 import org.joml.Vector2f;
-import org.joml.Vector2i;
 import org.joml.Vector3f;
 
 import java.util.function.IntSupplier;
@@ -16,6 +14,8 @@ public class UITransform extends Transform {
     private IntSupplier y;
     private IntSupplier width;
     private IntSupplier height;
+
+    private float zIndex = 0f;
 
     private final Vector2f scale = new Vector2f(1, 1);
 
@@ -55,12 +55,6 @@ public class UITransform extends Transform {
         return this;
     }
 
-    @Override
-    public Transform scale(float x, float y, float z) {
-        scale(x, y);
-        return this;
-    }
-
     public void scaleX(float scale) {
         scale(scale, this.scale.y);
     }
@@ -69,19 +63,38 @@ public class UITransform extends Transform {
         scale(this.scale.x, scale);
     }
 
-    public void setPosition(int x, int y) {
+    public void setWidth(int width) {
+        this.width = () -> width;
+    }
+
+    public void setHeight(int height) {
+        this.height = () -> height;
+    }
+
+    public void setX(int x) {
         this.x = () -> x;
+    }
+
+    public void setY(int y) {
         this.y = () -> y;
     }
 
-    public void setPosition(IntSupplier x, IntSupplier y) {
+    public void setX(IntSupplier x) {
         this.x = x;
+    }
+
+    public void setY(IntSupplier y) {
         this.y = y;
+    }
+
+    public UITransform setZIndex(float zIndex) {
+        this.zIndex = zIndex;
+        return this;
     }
 
     @Override
     public Vector3f getPosition() {
-        return PositionConverter.pixelScaledPosToWorldScaledPos(x.getAsInt(), y.getAsInt(), width.getAsInt(), height.getAsInt());
+        return PositionConverter.pixelScaledPosToWorldScaledPos(x.getAsInt(), y.getAsInt(), width.getAsInt(), height.getAsInt(), zIndex);
     }
 
     @Override
@@ -93,8 +106,16 @@ public class UITransform extends Transform {
         return x.getAsInt();
     }
 
+    public IntSupplier getRawX() {
+        return x;
+    }
+
     public int getY() {
         return y.getAsInt();
+    }
+
+    public IntSupplier getRawY() {
+        return y;
     }
 
     public int getWidth() {
@@ -103,5 +124,9 @@ public class UITransform extends Transform {
 
     public int getHeight() {
         return height.getAsInt();
+    }
+
+    public float getZIndex() {
+        return zIndex;
     }
 }

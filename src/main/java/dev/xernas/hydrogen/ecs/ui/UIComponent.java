@@ -9,28 +9,25 @@ import dev.xernas.photon.utils.Models;
 
 public class UIComponent extends Actor {
 
-    public UIComponent(String name, UITransform transform, Material material, Module... modules) {
-        super(name, transform);
+    public UIComponent(String name, UITransform transform, Model model, Material material, Module... modules) {
+        super(name, transform, modules);
 
-        Model noPerspectiveQuad = Models.createQuad();
-        noPerspectiveQuad.usePerspective(false);
+        model.usePerspective(false);
 
-        RenderingModule renderingModule = new RenderingModule("ui", noPerspectiveQuad, material);
+        RenderingModule renderingModule = new RenderingModule("ui", model, material);
         newModules(renderingModule);
+    }
 
-        newModules(modules);
+    public UIComponent(String name, UITransform transform, Material material, Module... modules) {
+        this(name, transform, Models.createQuad(), material, modules);
+    }
+
+    public UIComponent(UITransform transform, Model model, Material material, Module... modules) {
+        this(null, transform, model, material, modules);
     }
 
     public UIComponent(UITransform transform, Material material, Module... modules) {
-        super(transform);
-
-        Model noPerspectiveQuad = Models.createQuad();
-        noPerspectiveQuad.usePerspective(false);
-
-        RenderingModule renderingModule = new RenderingModule("ui", noPerspectiveQuad, material);
-        newModules(renderingModule);
-
-        newModules(modules);
+        this(null, transform, material, modules);
     }
 
 }

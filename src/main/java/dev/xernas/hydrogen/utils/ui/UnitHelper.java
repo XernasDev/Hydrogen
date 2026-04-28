@@ -11,9 +11,14 @@ import java.util.regex.Pattern;
 public class UnitHelper {
 
     private static Window window;
+    private static int contextSize = 0;
 
     public static void init(Window window) {
         UnitHelper.window = window;
+    }
+
+    public static void setContextSize(int contextSize) {
+        UnitHelper.contextSize = contextSize;
     }
 
     public static IntSupplier getSize(String size) throws HydrogenException {
@@ -39,19 +44,25 @@ public class UnitHelper {
 
     public static IntSupplier getSize(int number, Unit unit) {
         switch (unit) {
-            case Unit.PIXEL -> {
+            case PIXEL -> {
                 return () -> number;
             }
-            case Unit.VIEW_WIDTH -> {
+            case VIEW_WIDTH -> {
                 return () -> {
                     float percent  = number / 100f;
                     return (int) (percent * window.getWidth());
                 };
             }
-            case Unit.VIEW_HEIGHT -> {
+            case VIEW_HEIGHT -> {
                 return () -> {
                     float percent  = number / 100f;
                     return (int) (percent * window.getHeight());
+                };
+            }
+            case ACTOR_UNIT -> {
+                return () -> {
+                    float percent = number / 100f;
+                    return (int) (percent * contextSize);
                 };
             }
             default -> throw new IllegalArgumentException("Couldn't recognise the unit enum");
@@ -60,19 +71,25 @@ public class UnitHelper {
 
     public static IntSupplier getSize(IntSupplier number, Unit unit) {
         switch (unit) {
-            case Unit.PIXEL -> {
+            case PIXEL -> {
                 return number;
             }
-            case Unit.VIEW_WIDTH -> {
+            case VIEW_WIDTH -> {
                 return () -> {
                     float percent  = number.getAsInt() / 100f;
                     return (int) (percent * window.getWidth());
                 };
             }
-            case Unit.VIEW_HEIGHT -> {
+            case VIEW_HEIGHT -> {
                 return () -> {
                     float percent  = number.getAsInt() / 100f;
                     return (int) (percent * window.getHeight());
+                };
+            }
+            case ACTOR_UNIT -> {
+                return () -> {
+                    float percent = number.getAsInt() / 100f;
+                    return (int) (percent * contextSize);
                 };
             }
             default -> throw new IllegalArgumentException("Couldn't recognise the unit enum");
@@ -101,6 +118,9 @@ public class UnitHelper {
             }
             case "vh" -> {
                 return Unit.VIEW_HEIGHT;
+            }
+            case "au" -> {
+                return Unit.ACTOR_UNIT;
             }
             default -> throw new IllegalArgumentException("Couldn't recognise the unit");
         }
