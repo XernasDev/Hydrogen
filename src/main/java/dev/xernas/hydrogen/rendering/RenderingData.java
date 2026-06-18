@@ -1,6 +1,8 @@
 package dev.xernas.hydrogen.rendering;
 
+import dev.xernas.hydrogen.ecs.module.RenderingModule;
 import dev.xernas.hydrogen.rendering.material.Material;
+import dev.xernas.photon.api.DrawMode;
 import dev.xernas.photon.api.IRenderer;
 import dev.xernas.photon.api.framebuffer.IFramebuffer;
 import dev.xernas.photon.api.model.IMesh;
@@ -20,9 +22,18 @@ public class RenderingData {
     private ITexture texture;
     private Material material;
 
+    private RenderingModule module;
+
     private boolean loaded = false;
 
     public RenderingData(Shader shader, Model model, Material material) {
+        this.shaderObj = shader;
+        this.modelObj = model;
+        this.materialObj = material;
+    }
+
+    public RenderingData(RenderingModule module, Shader shader, Model model, Material material) {
+        this.module = module;
         this.shaderObj = shader;
         this.modelObj = model;
         this.materialObj = material;
@@ -66,6 +77,14 @@ public class RenderingData {
 
     public Material getMaterial() {
         return material;
+    }
+
+    public boolean hasModule() {
+        return module != null;
+    }
+
+    public RenderingModule getModule() {
+        return module;
     }
 
     public boolean isLoaded() {

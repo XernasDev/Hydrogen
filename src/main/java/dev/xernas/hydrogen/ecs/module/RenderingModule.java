@@ -1,6 +1,7 @@
 package dev.xernas.hydrogen.ecs.module;
 
 import dev.xernas.hydrogen.Application;
+import dev.xernas.hydrogen.HydrogenException;
 import dev.xernas.hydrogen.ecs.Actor;
 import dev.xernas.hydrogen.rendering.Renderer;
 import dev.xernas.hydrogen.rendering.RenderingData;
@@ -22,6 +23,8 @@ public class RenderingModule extends Module {
     private final String shader;
     private Model model;
     private Material material;
+
+    private boolean isVisible = true;
 
     public RenderingModule(String shader, Model model, Material material) {
         this.shader = shader;
@@ -46,14 +49,26 @@ public class RenderingModule extends Module {
         else shader.setUniform("u_useTexture", false);
     }
 
-    public void setModel(Model model) {
+    public void setModel(Model model) throws HydrogenException {
         this.model = model;
-        renderer.reloadActor(actor);
+        try {
+            renderer.reloadActor(actor);
+        } catch (PhotonException e) {
+            throw new HydrogenException(e);
+        }
     }
 
-    public void setMaterial(Material material) {
+    public void setMaterial(Material material) throws HydrogenException {
         this.material = material;
-        renderer.reloadActor(actor);
+        try {
+            renderer.reloadActor(actor);
+        } catch (PhotonException e) {
+            throw new HydrogenException(e);
+        }
+    }
+
+    public void setVisible(boolean visible) {
+        isVisible = visible;
     }
 
     public String getShader() {
@@ -66,5 +81,9 @@ public class RenderingModule extends Module {
 
     public Material getMaterial() {
         return material;
+    }
+
+    public boolean isVisible() {
+        return isVisible;
     }
 }

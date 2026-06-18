@@ -1,6 +1,7 @@
 package dev.xernas.hydrogen.ecs.module;
 
 import dev.xernas.hydrogen.Application;
+import dev.xernas.hydrogen.HydrogenException;
 import dev.xernas.hydrogen.ecs.Actor;
 import dev.xernas.hydrogen.rendering.Renderer;
 import dev.xernas.hydrogen.rendering.RenderingData;
@@ -10,19 +11,18 @@ import dev.xernas.photon.api.model.IMesh;
 import dev.xernas.photon.api.shader.IShader;
 import dev.xernas.photon.api.texture.ITexture;
 import dev.xernas.photon.api.window.Window;
-import dev.xernas.photon.api.window.input.Input;
 
 public abstract class Module {
 
     private boolean active = false;
 
-    public abstract void onStart(Application app, Actor actor, Window window, Renderer renderer);
+    public abstract void onStart(Application app, Actor actor, Window window, Renderer renderer) throws HydrogenException;
 
-    public void onUpdate() {
+    public void onUpdate() throws HydrogenException {
 
     }
 
-    public void onInput(Input input) {
+    public void onInput() throws HydrogenException {
 
     }
 
@@ -34,7 +34,7 @@ public abstract class Module {
 
     }
 
-    public final void enable(Application app, Actor actor, Window window, Renderer renderer) {
+    public final void enable(Application app, Actor actor, Window window, Renderer renderer) throws HydrogenException {
         onStart(app, actor, window, renderer);
         active = true;
     }

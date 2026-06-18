@@ -1,8 +1,10 @@
-package dev.xernas.hydrogen.ecs.ui;
+package dev.xernas.hydrogen.ecs.ui.components;
 
+import dev.xernas.hydrogen.HydrogenException;
 import dev.xernas.hydrogen.asset.Asset;
 import dev.xernas.hydrogen.ecs.Actor;
 import dev.xernas.hydrogen.ecs.module.RenderingModule;
+import dev.xernas.hydrogen.ecs.ui.UITransform;
 import dev.xernas.hydrogen.rendering.material.Material;
 import dev.xernas.hydrogen.utils.ui.UnitHelper;
 import dev.xernas.microscope.format.FontFormat;
@@ -19,12 +21,13 @@ public class Text extends Actor {
     private static float pointer = 0;
 
     private final List<CharActor> charActors = new ArrayList<>();
-    private final float size;
     private final Asset.FontAsset font;
     private final Color color;
-    private final IntSupplier x;
-    private final IntSupplier y;
+
+    private IntSupplier x;
+    private IntSupplier y;
     private String string;
+    private float size;
 
     public Text(String string, IntSupplier x, IntSupplier y, float size, Asset.FontAsset font, Color color) {
         this.string = string;
@@ -40,8 +43,6 @@ public class Text extends Actor {
             newChild(charActor);
             charActors.add(charActor);
         }
-
-        UnitHelper.setContextSize(getWidth());
 
         pointer = 0;
     }
@@ -88,7 +89,11 @@ public class Text extends Actor {
             char character = newString.charAt(i);
             final float currentPointer = pointer;
             CharActor charActor = new CharActor(character, UnitHelper.add(x, () -> Math.round(currentPointer)), y, size, font, color);
-            instantiateChild(charActor);
+            try {
+                instantiateChild(charActor);
+            } catch (HydrogenException e) {
+                throw new RuntimeException(e);
+            }
             charActors.add(charActor);
         }
 
@@ -109,7 +114,6 @@ public class Text extends Actor {
                     FontFormat format = bitmapFont.getFormat();
                     FontFormat.Glyph glyph = format.getGlyph(character);
                     Model model = getCharModel(glyph, format.getScaleW(), format.getScaleH());
-                    model.usePerspective(false);
                     model.flipV();
                     Texture texture = bitmapFont.getTexture().setNearestFiltering(true);
                     Color finalColor = color != null ? color : Color.BLACK;
@@ -169,7 +173,7 @@ public class Text extends Actor {
                     2, 3, 0
             };
 
-            return new Model("Char-" + glyph.x() + "-" + glyph.y() + "-" + glyph.width() + "-" + glyph.height() + "-" + atlasW + "-" + atlasH, vertices, indices);
+            return new Model("Char-" + glyph.x() + "-" + glyph.y() + "-" + glyph.width() + "-" + glyph.height() + "-" + atlasW + "-" + atlasH, vertices, indices, Model.ModelSettings.ORTHO_SETTINGS);
         }
     }
 

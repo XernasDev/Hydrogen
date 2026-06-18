@@ -28,30 +28,26 @@ public class Scene {
 
     public Scene(String name, Actor... actors) {
         this.name = name;
-        for (Actor actor : actors) {
-            this.actors.add(actor);
-            actor.setScene(this);
-            actorNames.put(actor.getName(), actor);
-        }
+        for (Actor actor : actors) newActor(actor);
     }
 
     public void load(Application app, Window window, Renderer renderer) throws PhotonException {
-        if (!hasCameraActor()) throw new HydrogenException("Scene " + name + " must have at least one camera actor to be loaded.");
         cameraActor = findCameraActor();
+        if (cameraActor == null) throw new HydrogenException("Scene " + name + " must have at least one camera actor to be loaded.");
         renderer.loadScene(this);
-        actors.forEach(actor -> actor.start(app, window, renderer));
+        for (Actor actor : actors) actor.start(app, window, renderer);
 
         this.app = app;
         this.window = window;
         this.renderer = renderer;
     }
 
-    public void update() {
-        new ArrayList<>(actors).forEach(Actor::update);
+    public void update() throws HydrogenException {
+        for (Actor actor : new ArrayList<>(actors)) actor.update();
     }
 
-    public void input(Input input) {
-        new ArrayList<>(actors).forEach(actor -> actor.input(input));
+    public void input() throws HydrogenException {
+        for (Actor actor : new ArrayList<>(actors)) actor.input();
     }
 
     public void stop() throws PhotonException {
@@ -64,10 +60,11 @@ public class Scene {
         actorNames.put(actor.getName(), actor);
         actor.setScene(this);
         if (actor.hasModule(GlobalModule.class)) globalModules.add(actor.getModule(GlobalModule.class));
+        globalModules.addAll(actor.getChildrenGlobalModules());
         return this;
     }
 
-    public void instantiate(Actor actor) {
+    public void instantiate(Actor actor) throws HydrogenException {
         if (isNotRendererLoaded()) return;
         if (!actor.isChild()) newActor(actor);
         try {
@@ -122,20 +119,13 @@ public class Scene {
         return globalModules;
     }
 
-    public Actor findCameraActor() {
-        Optional<Actor> cameraActor = actors.stream()
-                .filter(actor -> actor.getTransform() instanceof Transform.CameraTransform)
-                .findAny();
-        return cameraActor.orElse(null);
+    private Actor findCameraActor() {
+        for (Actor actor : actors) return actor.hasCamera();
+        return null;
     }
 
     public Actor getCameraActor() {
         return cameraActor;
-    }
-
-    public boolean hasCameraActor() {
-        return actors.stream()
-                .anyMatch(actor -> actor.getTransform() instanceof Transform.CameraTransform);
     }
 
     private boolean isNotRendererLoaded() {

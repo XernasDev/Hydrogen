@@ -2,6 +2,7 @@ package dev.xernas.hydrogen.ecs.module;
 
 import dev.xernas.atom.math.MathUtils;
 import dev.xernas.hydrogen.Application;
+import dev.xernas.hydrogen.HydrogenException;
 import dev.xernas.hydrogen.ecs.Actor;
 import dev.xernas.hydrogen.rendering.Renderer;
 import dev.xernas.photon.api.Transform;
@@ -29,8 +30,8 @@ public class CameraController extends Module {
 
 
     @Override
-    public void onStart(Application app, Actor parent, Window window, Renderer renderer) {
-        if (!(parent.getTransform() instanceof Transform.CameraTransform)) throw new IllegalArgumentException("CameraController module can only be added to actors with a CameraTransform.");
+    public void onStart(Application app, Actor parent, Window window, Renderer renderer) throws HydrogenException {
+        if (!(parent.getTransform() instanceof Transform.CameraTransform)) throw new HydrogenException("CameraController module can only be added to actors with a CameraTransform.");
         cameraTransform = (Transform.CameraTransform) parent.getTransform();
     }
 
@@ -45,37 +46,37 @@ public class CameraController extends Module {
     }
 
     @Override
-    public void onInput(Input input) {
+    public void onInput() {
         direction = new Vector3f();
         rotation = new Vector3f();
-        if (input.isPressing(Key.KEY_Z)) {
+        if (Input.isPressing(Key.KEY_Z)) {
             direction.add(new Vector3f(0, 0, -speed));
         }
-        if (input.isPressing(Key.KEY_S)) {
+        if (Input.isPressing(Key.KEY_S)) {
             direction.add(new Vector3f(0, 0, speed));
         }
-        if (input.isPressing(Key.KEY_Q)) {
+        if (Input.isPressing(Key.KEY_Q)) {
             direction.add(new Vector3f(-speed, 0, 0));
         }
-        if (input.isPressing(Key.KEY_D)) {
+        if (Input.isPressing(Key.KEY_D)) {
             direction.add(new Vector3f(speed, 0, 0));
         }
-        if (input.isPressing(Key.KEY_SPACE)) {
+        if (Input.isPressing(Key.KEY_SPACE)) {
             direction.add(new Vector3f(0, speed, 0));
         }
-        if (input.isPressing(Key.KEY_LEFT_SHIFT)) {
+        if (Input.isPressing(Key.KEY_LEFT_SHIFT)) {
             direction.add(new Vector3f(0, -speed, 0));
         }
-        if (input.isPressing(Key.KEY_ARROW_UP)) {
+        if (Input.isPressing(Key.KEY_ARROW_UP)) {
             rotation.add(new Vector3f(-0.1f, 0, 0));
         }
-        if (input.isPressing(Key.KEY_ARROW_DOWN)) {
+        if (Input.isPressing(Key.KEY_ARROW_DOWN)) {
             rotation.add(new Vector3f(0.1f, 0, 0));
         }
-        if (input.isPressing(Key.KEY_ARROW_LEFT)) {
+        if (Input.isPressing(Key.KEY_ARROW_LEFT)) {
             rotation.add(new Vector3f(0, -0.1f, 0));
         }
-        if (input.isPressing(Key.KEY_ARROW_RIGHT)) {
+        if (Input.isPressing(Key.KEY_ARROW_RIGHT)) {
             rotation.add(new Vector3f(0, 0.1f, 0));
         }
     }

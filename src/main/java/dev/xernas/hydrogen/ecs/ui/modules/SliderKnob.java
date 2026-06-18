@@ -1,7 +1,9 @@
-package dev.xernas.hydrogen.ecs.ui;
+package dev.xernas.hydrogen.ecs.ui.modules;
 
 import dev.xernas.hydrogen.Application;
+import dev.xernas.hydrogen.HydrogenException;
 import dev.xernas.hydrogen.ecs.Actor;
+import dev.xernas.hydrogen.ecs.ui.UITransform;
 import dev.xernas.hydrogen.rendering.Renderer;
 import dev.xernas.hydrogen.utils.ui.UnitHelper;
 import dev.xernas.photon.api.window.Window;
@@ -10,7 +12,6 @@ import dev.xernas.photon.api.window.input.Key;
 
 public abstract class SliderKnob extends MouseBox {
 
-    private Window window;
     private UITransform transform;
     private Bar bar;
 
@@ -19,10 +20,9 @@ public abstract class SliderKnob extends MouseBox {
     private int knobStart;
 
     @Override
-    public void onStart(Application app, Actor actor, Window window, Renderer renderer) {
+    public void onStart(Application app, Actor actor, Window window, Renderer renderer) throws HydrogenException {
         super.onStart(app, actor, window, renderer);
-        if (!actor.isChild() || !actor.getParent().hasModule(Bar.class)) throw new IllegalStateException("A slider knob has to be a child of an actor that has the Bar.class module");
-        this.window = window;
+        if (!actor.isChild() || !actor.getParent().hasModule(Bar.class)) throw new HydrogenException("A slider knob has to be a child of an actor that has the Bar.class module");
         this.bar = actor.getParent().getModule(Bar.class);
         this.transform = getUITransform();
         transform.setX(UnitHelper.sub(bar.getUITransform().getRawX(), () -> transform.getWidth() / 2));
@@ -43,21 +43,20 @@ public abstract class SliderKnob extends MouseBox {
     }
 
     @Override
-    public void onInput(Input input) {
-        super.onInput(input);
-        if (input.hasReleased(Key.MOUSE_LEFT)) {
+    public void onInput() throws HydrogenException {
+        super.onInput();
+        if (Input.hasReleased(Key.MOUSE_LEFT)) {
             if (isPressing) onRelease(bar);
             isPressing = false;
         }
-        if (isPressing) transform.setX(knobStart + (int) (input.getMouse().getX() - mouseStart));
+        if (isPressing) transform.setX(knobStart + (int) (Input.getMouse().getX() - mouseStart));
     }
 
     @Override
-    public void whileInside(Input input) {
-        // TODO window.setCursorShape(CursorShape.ARROW);
-        if (input.hasPressed(Key.MOUSE_LEFT)) {
+    public void whileInside() {
+        if (Input.hasPressed(Key.MOUSE_LEFT)) {
             isPressing = true;
-            mouseStart = (int) input.getMouse().getX();
+            mouseStart = (int) Input.getMouse().getX();
             knobStart = transform.getX();
         }
     }

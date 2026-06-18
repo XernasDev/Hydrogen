@@ -49,13 +49,14 @@ public class DefaultRenderer implements Renderer {
             Actor actor = entry.getKey();
             RenderingData data = entry.getValue();
             if (!data.isLoaded()) continue;
+            if (data.hasModule() && !data.getModule().isVisible()) continue;
             IShader shader = data.getShader();
 
             renderer.render(shader, data.getMesh(), () -> {
                 // Vertex
                 Matrix4f modelMatrix = MatrixUtils.createTransformationMatrix(actor.getTransform());
                 shader.setUniform("u_modelMatrix", modelMatrix);
-                if (data.getModelObj().usePerspective()) {
+                if (data.getModelObj().getSettings().usePerspective()) {
                     shader.setUniform("u_projectionMatrix", MatrixUtils.createProjectionMatrix(window, 80, 0.1f, 1000f));
                     shader.setUniform("u_viewMatrix", MatrixUtils.createViewMatrix((Transform.CameraTransform) scene.getCameraActor().getTransform()));
                 }
@@ -67,7 +68,6 @@ public class DefaultRenderer implements Renderer {
                 shader.setUniform("u_cameraWorldPos", scene.getCameraActor().getTransform().getPosition());
 
                 for (GlobalModule globalModule : scene.getGlobalModules()) globalModule.onGlobalRender(shader, actor, renderer);
-                for (GlobalModule globalModule : actor.getChildrenGlobalModules()) globalModule.onGlobalRender(shader, actor, renderer);
 
                 // Actor rendering
                 actor.render(data, renderer);
@@ -119,16 +119,12 @@ public class DefaultRenderer implements Renderer {
     }
 
     @Override
-    public void reloadActor(Actor actor) {
+    public void reloadActor(Actor actor) throws PhotonException {
         if (!loadedData.containsKey(actor)) return;
         RenderingData data = loadedData.get(actor);
         if (!data.isLoaded()) return;
-        try {
-            data.unload(renderer);
-            data.load(renderer);
-        } catch (PhotonException e) {
-            throw new RuntimeException(e);
-        }
+        data.unload(renderer);
+        data.load(renderer);
     }
 
     private RenderingData loadRenderingDataOfModule(RenderingModule renderingModule) throws PhotonException {
@@ -138,7 +134,7 @@ public class DefaultRenderer implements Renderer {
         Model model = renderingModule.getModel();
         Material material = renderingModule.getMaterial();
 
-        RenderingData data = new RenderingData(shader, model, material);
+        RenderingData data = new RenderingData(renderingModule, shader, model, material);
         data.load(renderer);
         return data;
     }

@@ -1,6 +1,7 @@
 package dev.xernas.hydrogen.ecs;
 
 import dev.xernas.hydrogen.Application;
+import dev.xernas.hydrogen.HydrogenException;
 import dev.xernas.hydrogen.ecs.module.GlobalModule;
 import dev.xernas.hydrogen.ecs.module.Module;
 import dev.xernas.hydrogen.rendering.Renderer;
@@ -62,6 +63,7 @@ public class Actor {
         this.children.put(actor.getName(), actor);
         actor.setParent(this);
         if (actor.hasModule(GlobalModule.class)) childrenGlobalModules.add(actor.getModule(GlobalModule.class));
+        childrenGlobalModules.addAll(actor.getChildrenGlobalModules());
         return this;
     }
 
@@ -69,7 +71,7 @@ public class Actor {
         for (Actor actor : actors) newChild(actor);
     }
 
-    public void instantiateChild(Actor actor) {
+    public void instantiateChild(Actor actor) throws HydrogenException {
         newChild(actor);
         scene.instantiate(actor);
     }
@@ -107,23 +109,28 @@ public class Actor {
         return transform;
     }
 
-    public void start(Application app, Window window, Renderer renderer) {
-        modules.values().forEach(module -> module.enable(app, this, window, renderer));
-        children.values().forEach(child -> child.start(app, window, renderer));
+    public Actor hasCamera() {
+        if (transform instanceof Transform.CameraTransform) return this;
+        for (Actor child : children.values()) {
+            Actor camera = child.hasCamera();
+            if (camera != null) return camera;
+        }
+        return null;
     }
 
-    public void update() {
-        new ArrayList<>(modules.values()).forEach(module -> {
-            if (module.isActive()) module.onUpdate();
-        });
-        new ArrayList<>(children.values()).forEach(Actor::update);
+    public void start(Application app, Window window, Renderer renderer) throws HydrogenException {
+        for (Module module : modules.values()) module.enable(app, this, window, renderer);
+        for (Actor child : children.values()) child.start(app, window, renderer);
     }
 
-    public void input(Input input) {
-        new ArrayList<>(modules.values()).forEach(module -> {
-            if (module.isActive()) module.onInput(input);
-        });
-        new ArrayList<>(children.values()).forEach(child -> child.input(input));
+    public void update() throws HydrogenException {
+        for (Module module : new ArrayList<>(modules.values())) if (module.isActive()) module.onUpdate();
+        for (Actor child : new ArrayList<>(children.values())) child.update();
+    }
+
+    public void input() throws HydrogenException {
+        for (Module module : new ArrayList<>(modules.values())) if (module.isActive()) module.onInput();
+        for (Actor child : new ArrayList<>(children.values())) child.input();
     }
 
     public void render(RenderingData data, IRenderer<IFramebuffer, IShader, IMesh, ITexture> renderer) {

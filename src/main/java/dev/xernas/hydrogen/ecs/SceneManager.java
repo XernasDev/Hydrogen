@@ -33,12 +33,12 @@ public class SceneManager {
         firstScene.load(app, window, renderer);
     }
 
-    public static void update() {
+    public static void update() throws HydrogenException {
         getCurrentScene().update();
     }
 
-    public static void input() {
-        getCurrentScene().input(window.getInput());
+    public static void input() throws HydrogenException {
+        getCurrentScene().input();
     }
 
     public static void shutdown() throws PhotonException {

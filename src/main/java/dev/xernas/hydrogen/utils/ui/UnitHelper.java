@@ -11,14 +11,9 @@ import java.util.regex.Pattern;
 public class UnitHelper {
 
     private static Window window;
-    private static int contextSize = 0;
 
     public static void init(Window window) {
         UnitHelper.window = window;
-    }
-
-    public static void setContextSize(int contextSize) {
-        UnitHelper.contextSize = contextSize;
     }
 
     public static IntSupplier getSize(String size) throws HydrogenException {
@@ -59,12 +54,6 @@ public class UnitHelper {
                     return (int) (percent * window.getHeight());
                 };
             }
-            case ACTOR_UNIT -> {
-                return () -> {
-                    float percent = number / 100f;
-                    return (int) (percent * contextSize);
-                };
-            }
             default -> throw new IllegalArgumentException("Couldn't recognise the unit enum");
         }
     }
@@ -86,12 +75,6 @@ public class UnitHelper {
                     return (int) (percent * window.getHeight());
                 };
             }
-            case ACTOR_UNIT -> {
-                return () -> {
-                    float percent = number.getAsInt() / 100f;
-                    return (int) (percent * contextSize);
-                };
-            }
             default -> throw new IllegalArgumentException("Couldn't recognise the unit enum");
         }
     }
@@ -108,6 +91,22 @@ public class UnitHelper {
         return () -> (int) (size.getAsInt() * scalar);
     }
 
+    public static IntSupplier centerX(IntSupplier width) {
+        return sub(getSize(50, Unit.VIEW_WIDTH), () -> width.getAsInt() / 2);
+    }
+
+    public static IntSupplier centerX(int width) {
+        return centerX(() -> width);
+    }
+
+    public static IntSupplier centerY(IntSupplier height) {
+        return sub(getSize(50, Unit.VIEW_HEIGHT), () -> height.getAsInt() / 2);
+    }
+
+    public static IntSupplier centerY(int height) {
+        return centerY(() -> height);
+    }
+
     public static Unit getUnitFromStr(String unit) {
         switch (unit.toLowerCase(Locale.ROOT)) {
             case "px" -> {
@@ -118,9 +117,6 @@ public class UnitHelper {
             }
             case "vh" -> {
                 return Unit.VIEW_HEIGHT;
-            }
-            case "au" -> {
-                return Unit.ACTOR_UNIT;
             }
             default -> throw new IllegalArgumentException("Couldn't recognise the unit");
         }
